@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: dfs_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dfs_user
+      POSTGRES_PASSWORD: dfs_pass
+      POSTGRES_DB: dfs_db
+    networks:
+      - internal_network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  master-node:
+    build:
+      context: ../master-node
+      dockerfile: ./master-node.Dockerfile
+    container_name: dfs_master_node
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dfs_db
+      SPRING_DATASOURCE_USERNAME: dfs_user
+      SPRING_DATASOURCE_PASSWORD: dfs_pass
+    networks:
+      - internal_network
+
+  gateway-api:
+    build:
+      context: ../gateway-api
+      dockerfile: ./gateway-api.Dockerfile
+    container_name: dfs_gateway_api
+    ports:
+      - "8080:8080"
+    networks:
+      - internal_network
+      - public_network
+
+  file-node:
+    build:
+      context: ../file-node
+      dockerfile: ./file-node.Dockerfile
+    container_name: dfs_file_node
+    networks:
+      - internal_network
+
+volumes:
+  postgres_data:
+
+networks:
+  public_network:
+    driver: bridge
+  internal_network:
+    driver: bridge
+    internal: true
