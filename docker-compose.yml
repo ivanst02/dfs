@@ -14,8 +14,8 @@ services:
 
   master-node:
     build:
-      context: ../master-node
-      dockerfile: ./master-node.Dockerfile
+      context: master-node
+      dockerfile: master-node/master-node.Dockerfile
     container_name: dfs_master_node
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dfs_db
@@ -26,8 +26,8 @@ services:
 
   gateway-api:
     build:
-      context: ../gateway-api
-      dockerfile: ./gateway-api.Dockerfile
+      context: gateway-api
+      dockerfile: gateway-api/gateway-api.Dockerfile
     container_name: dfs_gateway_api
     ports:
       - "8080:8080"
@@ -37,8 +37,8 @@ services:
 
   file-node:
     build:
-      context: ../file-node
-      dockerfile: ./file-node.Dockerfile
+      context: file-node
+      dockerfile: file-node/file-node.Dockerfile
     container_name: dfs_file_node
     networks:
       - internal_network
