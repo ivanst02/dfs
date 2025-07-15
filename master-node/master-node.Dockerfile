@@ -2,7 +2,7 @@ FROM openjdk:21-jdk-slim
 
 WORKDIR /app
 
-COPY target/master-node-0.0.1.jar app.jar
+COPY target/master-node-*.jar app.jar
 
 EXPOSE 8081
 
