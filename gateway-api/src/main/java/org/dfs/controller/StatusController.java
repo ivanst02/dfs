@@ -14,13 +14,15 @@ public class StatusController {
     @GetMapping("/status")
     public Map<String, String> status(){
         RestTemplate restTemplate = new RestTemplate();
-        Map<String, String> response = new HashMap<>();
+        Map<String, String> response = new HashMap<String, String>();
 
         response.put("api", "up");
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity("http://dfs-master-node:8081/status", String.class);
-        response.put("master_db", responseEntity.getBody());
-        responseEntity = restTemplate.getForEntity("http://dfs-file-node:8082/status", String.class);
-        response.put("data", responseEntity.getBody());
+        ResponseEntity<Map> responseEntity = restTemplate.getForEntity("http://dfs-master-node:8081/status", Map.class);
+        assert responseEntity.getBody() != null;
+        response.putAll(responseEntity.getBody());
+        responseEntity = restTemplate.getForEntity("http://dfs-file-node:8082/status", Map.class);
+        assert responseEntity.getBody() != null;
+        response.putAll(responseEntity.getBody());
 
         return response;
     }

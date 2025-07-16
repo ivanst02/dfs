@@ -10,7 +10,9 @@ import java.util.Map;
     public class StatusController {
 
         @GetMapping("/status")
-        public String status(){
-            return "success";
+        public Map<String, String> status(){
+            Map<String, String> responce = new HashMap<String, String>();
+            responce.put("data", "up");
+            return responce;
         }
 }
