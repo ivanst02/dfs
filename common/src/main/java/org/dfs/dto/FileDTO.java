@@ -1,17 +1,15 @@
 package org.dfs.dto;
 
-public class FileInfoDTO {
+public class FileDTO {
     private String fileId;
     private String fileName;
-    private int totalChunks;
 
-    public FileInfoDTO(String fileId, String fileName, int totalChunks) {
-        this.totalChunks = totalChunks;
+    public FileDTO() {}
+
+    public FileDTO(String fileId, String fileName) {
         this.fileId = fileId;
         this.fileName = fileName;
     }
-
-    public FileInfoDTO(){}
 
     public String getFileId() {
         return fileId;
@@ -27,13 +25,5 @@ public class FileInfoDTO {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
-    }
-
-    public int getTotalChunks() {
-        return totalChunks;
-    }
-
-    public void setTotalChunks(int totalChunks) {
-        this.totalChunks = totalChunks;
     }
 }

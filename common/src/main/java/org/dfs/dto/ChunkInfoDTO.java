@@ -4,6 +4,32 @@ public class ChunkInfoDTO {
     private String chunkId;
     private int chunkIndex;
     private String fileId;
+    private String fileNodeAddress;
+    private String replicaNodeAddress;
+
+    public ChunkInfoDTO(String chunkId, int chunkIndex, String fileId) {
+        this.chunkId = chunkId;
+        this.chunkIndex = chunkIndex;
+        this.fileId = fileId;
+    }
+
+    public ChunkInfoDTO(String chunkId, int chunkIndex, String fileId, String fileNodeAddress, String replicaNodeAddress) {
+        this.chunkId = chunkId;
+        this.chunkIndex = chunkIndex;
+        this.fileId = fileId;
+        this.fileNodeAddress = fileNodeAddress;
+        this.replicaNodeAddress = replicaNodeAddress;
+    }
+
+    public ChunkInfoDTO() {}
+
+    public String getReplicaNodeAddress() {
+        return replicaNodeAddress;
+    }
+
+    public void setReplicaNodeAddress(String replicaNodeAddress) {
+        this.replicaNodeAddress = replicaNodeAddress;
+    }
 
     public String getChunkId() {
         return chunkId;
@@ -28,4 +54,8 @@ public class ChunkInfoDTO {
     public void setFileId(String fileId) {
         this.fileId = fileId;
     }
+
+    public String getFileNodeAddress() {return fileNodeAddress;}
+
+    public void setFileNodeAddress(String fileNodeAddress) {this.fileNodeAddress = fileNodeAddress;}
 }

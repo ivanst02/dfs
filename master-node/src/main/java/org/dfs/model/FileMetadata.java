@@ -1,12 +1,16 @@
 package org.dfs.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
 public class FileMetadata {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String fileId;
     private String fileName;
     private int total_chunks;
@@ -33,5 +37,8 @@ public class FileMetadata {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public void setTotalChunks(int totalChunks) {
     }
 }

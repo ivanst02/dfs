@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distributed File System UI</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 2rem;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f7f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #e0e6e8;
+            margin: 2rem 0;
+        }
+        input[type="file"], input[type="text"] {
+            border: 1px solid #ccc;
+            padding: 0.5rem;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 0.5rem;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #uploadStatus, #fileListStatus {
+            margin-top: 1rem;
+            font-style: italic;
+        }
+        .file-list {
+            list-style: none;
+            padding: 0;
+        }
+        .file-item {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Distributed File System</h1>
+
+    <h2>Upload a File</h2>
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">Upload</button>
+    <div id="uploadStatus"></div>
+
+    <hr>
+
+    <h2>Available Files</h2>
+    <div id="fileListStatus">Loading files...</div>
+    <ul id="fileList" class="file-list"></ul>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:8080';
+
+    function getFileIcon(fileName) {
+        const ext = fileName.split('.').pop().toLowerCase();
+        switch (ext) {
+            case 'pdf': return 'picture_as_pdf';
+            case 'doc':
+            case 'docx': return 'description';
+            case 'xls':
+            case 'xlsx': return 'insert_chart';
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+            case 'gif': return 'image';
+            case 'zip':
+            case 'rar': return 'folder_zip';
+            case 'txt': return 'text_snippet';
+            case 'mp3':
+            case 'wav': return 'music_note';
+            case 'mp4':
+            case 'mov': return 'movie';
+            default: return 'insert_drive_file';
+            }
+        }
+
+    async function uploadFile() {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        const status = document.getElementById('uploadStatus');
+
+        if (!file) {
+            status.textContent = 'Please select a file to upload.';
+            return;
+        }
+
+        status.textContent = 'Uploading...';
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await fetch(`${API_URL}/upload`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                status.innerHTML = `Success! File uploaded with ID: <strong>${data.fileId}</strong>.`;
+                await fetchFiles(); // Refresh file list after successful upload
+            } else {
+                const error = await response.text();
+                status.textContent = `Upload failed: ${error}`;
+            }
+        } catch (error) {
+            status.textContent = `An error occurred: ${error.message}`;
+        }
+    }
+
+    async function fetchFiles() {
+        const fileList = document.getElementById('fileList');
+        const fileListStatus = document.getElementById('fileListStatus');
+        fileList.innerHTML = ''; // Clear previous list
+        fileListStatus.textContent = 'Loading files...';
+
+        try {
+                const response = await fetch(`${API_URL}/files`);
+                if (response.ok) {
+                    const files = await response.json();
+                    if (files.length === 0) {
+                        fileListStatus.textContent = 'No files found.';
+                    } else {
+                        fileListStatus.textContent = '';
+                        files.forEach(file => {
+                            const li = document.createElement('li');
+                            li.className = 'file-item';
+                            const iconName = getFileIcon(file.fileName);
+                            li.innerHTML = `
+                                <div class="file-info">
+                                    <span class="material-icons">${iconName}</span>
+                                    <span>${file.fileName}</span>
+                                </div>
+                                <button onclick="downloadFile('${file.fileId}')">Download</button>
+                            `;
+                            fileList.appendChild(li);
+                        });
+                    }
+                } else {
+                    fileListStatus.textContent = 'Failed to load files from server.';
+                }
+        } catch (error) {
+            fileListStatus.textContent = `Error fetching files: ${error.message}`;
+        }
+    }
+
+    function downloadFile(fileId) {
+        const downloadUrl = `${API_URL}/download/${fileId}`;
+        window.location.href = downloadUrl;
+    }
+
+    window.onload = fetchFiles;
+</script>
+</body>
+</html>

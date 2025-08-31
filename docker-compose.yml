@@ -9,8 +9,6 @@ services:
       POSTGRES_DB: dfs_db
     networks:
       - internal_network
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
   master-node:
     build:
@@ -35,16 +33,37 @@ services:
       - internal_network
       - public_network
 
-  file-node:
+  file-node1:
     build:
       context: file-node
-      dockerfile: file-node.Dockerfile
-    container_name: dfs-file-node
+      dockerfile: file-node1.Dockerfile
+    container_name: dfs-file-node1
     networks:
       - internal_network
 
-volumes:
-  postgres_data:
+  file-node2:
+    build:
+      context: file-node
+      dockerfile: file-node2.Dockerfile
+    container_name: dfs-file-node2
+    environment:
+      - SERVER_PORT=8083
+    ports:
+      - "8083:8083"
+    networks:
+      - internal_network
+
+  file-node3:
+    build:
+      context: file-node
+      dockerfile: file-node3.Dockerfile
+    container_name: dfs-file-node3
+    environment:
+      - SERVER_PORT=8084
+    ports:
+      - "8084:8084"
+    networks:
+      - internal_network
 
 networks:
   public_network:
