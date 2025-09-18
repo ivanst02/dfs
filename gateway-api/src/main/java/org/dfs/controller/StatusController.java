@@ -23,6 +23,12 @@ public class StatusController {
         responseEntity = restTemplate.getForEntity("http://dfs-file-node:8082/status", Map.class);
         assert responseEntity.getBody() != null;
         response.putAll(responseEntity.getBody());
+        responseEntity = restTemplate.getForEntity("http://dfs-file-node:8083/status", Map.class);
+        assert responseEntity.getBody() != null;
+        response.putAll(responseEntity.getBody());
+        responseEntity = restTemplate.getForEntity("http://dfs-file-node:8084/status", Map.class);
+        assert responseEntity.getBody() != null;
+        response.putAll(responseEntity.getBody());
 
         return response;
     }
